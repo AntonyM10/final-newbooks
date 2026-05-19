@@ -46,5 +46,16 @@ VALUES (${date}, ${description}, ${debit}, ${credit}, ${amount});
     // 3. Return success. SvelteKit will re-run load() automatically,
     //    so the page picks up the new row.
     return { success: true };
-  }
+  },
+delete: async ({ request }) => {
+    const formData = await request.formData();
+    const id = formData.get('id');
+
+    await sql`
+        DELETE FROM transactions
+        WHERE id = ${id}
+    `;
+
+    return { success: true };
+}  
 };

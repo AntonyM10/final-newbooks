@@ -7,6 +7,14 @@
 
 	// Wrap the array in $state so the totals below can react to it.
 	let transactions = $state(data.transactions);
+	let filter = $state('All');
+
+	let visibleTransactions = $derived(
+		filter === 'All' ? transactions : transactions.filter((t) => classify(t) === filter)
+	);
+	let revenueAccounts = $derived(transactions.filter((t) => classify(t) === 'Revenue'));
+
+	let expenseAccounts = $derived(transactions.filter((t) => classify(t) === 'Expense'));
 	// Add this INSIDE the <script> block, below the transactions array.
 	function classify(t) {
 		if (t.credit === 'Revenue') {
@@ -146,10 +154,22 @@
 				<span>Total Revenue</span>
 				<span>${totalRevenue.toFixed(2)}</span>
 			</div>
+			{#each revenueAccounts as r}
+				<div class="ml-4 flex justify-between text-sm text-emerald-700">
+					<span>{r.description}</span>
+					<span>${Number(r.amount).toFixed(2)}</span>
+				</div>
+			{/each}
 			<div class="flex justify-between font-medium text-rose-700">
 				<span>Total Expenses</span>
 				<span>${totalExpenses.toFixed(2)}</span>
 			</div>
+			{#each expenseAccounts as e}
+				<div class="ml-4 flex justify-between text-sm text-rose-700">
+					<span>{e.description}</span>
+					<span>${Number(e.amount).toFixed(2)}</span>
+				</div>
+			{/each}
 			<div class="flex justify-between border-t border-slate-300 pt-2 text-lg font-bold">
 				<span>Net Income</span>
 				<span class={netIncome >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
@@ -162,6 +182,28 @@
 	<!-- TRANSACTIONS LIST -->
 	<section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
 		<h2 class="mb-4 text-xl font-bold text-slate-800">Recent Transactions</h2>
+		<div class="mb-4 flex gap-2">
+			<button
+				class="rounded bg-slate-700 px-3 py-2 text-sm font-medium text-white"
+				onclick={() => (filter = 'All')}
+			>
+				All
+			</button>
+
+			<button
+				class="rounded bg-emerald-600 px-3 py-2 text-sm font-medium text-white"
+				onclick={() => (filter = 'Revenue')}
+			>
+				Income
+			</button>
+
+			<button
+				class="rounded bg-rose-600 px-3 py-2 text-sm font-medium text-white"
+				onclick={() => (filter = 'Expense')}
+			>
+				Expense
+			</button>
+		</div>
 
 		<div class="overflow-x-auto">
 			<table class="w-full text-sm">
@@ -173,10 +215,11 @@
 						<th class="px-3 py-2 text-left">Credit</th>
 						<th class="px-3 py-2 text-right">Amount</th>
 						<th class="px-3 py-2 text-left">Type</th>
+						<th class="px-3 py-2 text-left">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each transactions as t (t.id)}
+					{#each visibleTransactions as t (t.id)}
 						<tr class="border-t border-slate-200 hover:bg-slate-50">
 							<td class="px-3 py-2">{t.date}</td>
 							<td class="px-3 py-2">{t.description}</td>
@@ -191,6 +234,18 @@
 								{:else}
 									<span class="text-slate-400">Other</span>
 								{/if}
+							</td>
+							<td class="px-3 py-2">
+								    
+								<form method="POST" action="?/delete">
+									        <input type="hidden" name="id" value={t.id} />
+									        <button
+										class="rounded bg-rose-600 px-2 py-1 text-xs font-medium text-white"
+									>
+										            Delete         </button
+									>
+									    
+								</form>
 							</td>
 						</tr>
 					{/each}
