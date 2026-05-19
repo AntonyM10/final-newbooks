@@ -55,7 +55,7 @@
 	<section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
 		<h2 class="mb-4 text-xl font-bold text-slate-800">New Transaction</h2>
 
-		<form method="POST" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+		<form method="POST" action="?/add" class="grid grid-cols-1 gap-4 md:grid-cols-2">
 			<div>
 				<label for="date" class="mb-1 block text-sm font-medium text-slate-700">Date</label>
 				<input
@@ -236,15 +236,14 @@
 								{/if}
 							</td>
 							<td class="px-3 py-2">
-								    
-								<form method="POST" action="?/delete">
-									        <input type="hidden" name="id" value={t.id} />
-									        <button
+								<form method="POST" action="?/remove">
+									  <input type="hidden" name="id" value={t.id} />
+									  <button
+										type="submit"
 										class="rounded bg-rose-600 px-2 py-1 text-xs font-medium text-white"
 									>
-										            Delete         </button
-									>
-									    
+										    Delete   
+									</button>
 								</form>
 							</td>
 						</tr>

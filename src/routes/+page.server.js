@@ -26,7 +26,7 @@ const rows = await sql`
 }
 export const actions = {
   // 'default' runs when a form on the page is submitted with no action= attribute.
-  default: async ({ request }) => {
+  add: async ({ request }) => {
     // 1. Get the form data the browser sent.
     const formData = await request.formData();
     const date        = formData.get('date');
@@ -47,13 +47,13 @@ VALUES (${date}, ${description}, ${debit}, ${credit}, ${amount});
     //    so the page picks up the new row.
     return { success: true };
   },
-delete: async ({ request }) => {
+remove: async ({ request }) => {
     const formData = await request.formData();
     const id = formData.get('id');
 
     await sql`
         DELETE FROM transactions
-        WHERE id = ${id}
+        WHERE id = ${id};
     `;
 
     return { success: true };
